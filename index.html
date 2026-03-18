@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cancer Treatment — VPN Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+  :root {
+    --blue: #1a6ef5;
+    --blue-dark: #0f4fc2;
+    --blue-light: #e8f0fe;
+    --blue-mid: #4d8ef7;
+    --white: #ffffff;
+    --text: #0a1628;
+    --muted: #6b7da8;
+    --border: #d0dcf5;
+    --radius: 20px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--white);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% -10%, rgba(26,110,245,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 10% 80%, rgba(26,110,245,0.06) 0%, transparent 60%);
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.1s ease forwards;
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    opacity: 0;
+    animation: fadeUp 0.7s 0.2s ease forwards;
+  }
+
+  .hero h1 span {
+    color: var(--blue);
+    position: relative;
+    display: inline-block;
+  }
+
+  .hero h1 span::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--blue-mid));
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: underline 0.6s 1s ease forwards;
+  }
+
+  .hero-sub {
+    margin-top: 20px;
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.35s ease forwards;
+  }
+
+  .hero-sub em {
+    font-style: normal;
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .btn-start {
+    margin-top: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--blue);
+    color: white;
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 16px 40px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 4px 24px rgba(26,110,245,0.35);
+    opacity: 0;
+    animation: fadeUp 0.7s 0.5s ease forwards;
+  }
+
+  .btn-start:hover {
+    background: var(--blue-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(26,110,245,0.45);
+  }
+
+  .btn-start svg { transition: transform 0.2s; }
+  .btn-start:hover svg { transform: translateY(3px); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--border);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeIn 1s 1.5s ease forwards;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--border), transparent);
+    animation: scrollPulse 2s 1.5s infinite;
+  }
+
+  /* ── CHOICE SECTION ── */
+  .section {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 80px 24px;
+  }
+
+  .lottie-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .lottie-wrap.visible { opacity: 1; transform: translateY(0); }
+
+  #lottie-anim { width: 160px; height: 160px; }
+
+  .choice-label {
+    text-align: center;
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s 0.15s ease, transform 0.7s 0.15s ease;
+  }
+
+  .choice-label.visible { opacity: 1; transform: translateY(0); }
+
+  .choice-sub {
+    text-align: center;
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s 0.25s ease, transform 0.7s 0.25s ease;
+  }
+
+  .choice-sub.visible { opacity: 1; transform: translateY(0); }
+
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s 0.35s ease, transform 0.7s 0.35s ease;
+  }
+
+  .cards.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 560px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px 24px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(26,110,245,0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .card:hover { border-color: var(--blue); box-shadow: 0 4px 24px rgba(26,110,245,0.12); transform: translateY(-3px); }
+  .card:hover::before { opacity: 1; }
+
+  .card-icon {
+    font-size: 36px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .card-app {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--blue);
+    background: var(--blue-light);
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .card-pros {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .pro, .con {
+    font-size: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.5;
+  }
+
+  .pro { color: #1a7a4a; }
+  .con { color: #b04a1a; }
+
+  .pro::before { content: '✓'; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .con::before { content: '!'; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── INSTRUCTION ── */
+  .instruction {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px 100px;
+    display: none;
+  }
+
+  .instruction.active { display: block; }
+
+  .inst-header {
+    text-align: center;
+    margin-bottom: 48px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .inst-header.visible { opacity: 1; transform: translateY(0); }
+
+  .inst-title {
+    font-size: clamp(26px, 4vw, 36px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 10px;
+  }
+
+  .inst-subtitle {
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .step {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .step.visible { opacity: 1; transform: translateY(0); }
+
+  .step-num {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .step-body { flex: 1; min-width: 0; overflow: hidden; }
+
+  .step-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .code-block {
+    margin-top: 10px;
+    background: var(--blue-light);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blue-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .code-block-url {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blue-dark);
+    cursor: text;
+    width: 100%;
+  }
+
+  .copy-btn {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .copy-btn:hover { background: var(--blue-dark); }
+  .copy-btn.copied { background: #1a7a4a; }
+
+  .btn-install {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: white;
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 18px 40px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 6px 28px rgba(26,110,245,0.40);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin: 32px auto 0;
+    width: fit-content;
+  }
+
+  .btn-install:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(26,110,245,0.5); }
+
+  .note-box {
+    margin-top: 28px;
+    background: #fff8e7;
+    border: 1.5px solid #f5d77a;
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    font-size: 13px;
+    color: #7a5800;
+    line-height: 1.65;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .note-box.visible { opacity: 1; transform: translateY(0); }
+
+  .note-box strong { font-weight: 700; display: block; margin-bottom: 4px; color: #5a4000; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--blue-mid));
+    border-radius: 2px;
+    margin: 0 auto 48px;
+  }
+
+  /* ── KEYFRAMES ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes underline {
+    to { transform: scaleX(1); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─────────── HERO ─────────── -->
+<section class="hero" id="top">
+  <div class="hero-badge">Бесплатно · Без регистрации</div>
+  <h1>Cancer<br><span>Treatment</span></h1>
+  <p class="hero-sub">Он даже <em>лечит от рака</em> — и блокирует рекламу</p>
+  <button class="btn-start" onclick="smoothTo('choice')">
+    Начать
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 3v10M3 9l5 5 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    вниз
+  </div>
+</section>
+
+<!-- ─────────── CHOICE ─────────── -->
+<section id="choice">
+  <div class="section">
+    <div class="lottie-wrap" id="lottie-wrap">
+      <div id="lottie-anim"></div>
+    </div>
+
+    <div class="choice-label" id="choice-label">Как ты обычно сидишь в интернете?</div>
+    <div class="choice-sub" id="choice-sub">Выбери подходящий вариант — настроим всё за тебя</div>
+
+    <div class="cards" id="cards">
+      <div class="card" onclick="choose('karing')">
+        <span class="card-icon">🎮</span>
+        <div class="card-title">Геймер / Продвинутый</div>
+        <div class="card-app">Karing</div>
+        <div class="card-desc">Нужны заблокированные сайты, но хочу, чтобы игры и обычные сайты работали на полной скорости.</div>
+        <div class="card-pros">
+          <div class="pro">Максимальная скорость для игр и видео</div>
+          <div class="pro">Обычные сайты открываются без проблем</div>
+          <div class="pro">Блокировка рекламы</div>
+          <div class="pro">Обход белых списков</div>
+          <div class="con">Не стабилен и сложней в настройке</div>
+        </div>
+      </div>
+
+      <div class="card" onclick="choose('hiddify')">
+        <span class="card-icon">🛡️</span>
+        <div class="card-title">Простой пользователь</div>
+        <div class="card-app">Hiddify</div>
+        <div class="card-desc">Просто хочу, чтобы всё работало без лишних вопросов — один клик и готово.</div>
+        <div class="card-pros">
+          <div class="pro">Установка в один клик</div>
+          <div class="pro">Очень стабильно работает</div>
+          <div class="pro">Блокировка рекламы</div>
+          <div class="pro">Обход белых списков</div>
+          <div class="con">При онлайн-играх лучше отключать</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── KARING INSTRUCTION ─────────── -->
+<section id="inst-karing" class="instruction">
+  <div class="inst-header" id="karing-header">
+    <div class="divider"></div>
+    <div class="inst-title">Настройка Karing</div>
+    <div class="inst-subtitle">Займёт ~2 минуты. Сделай по шагам — не ошибёшься.</div>
+  </div>
+
+  <div class="steps" id="karing-steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Скачай Karing</div>
+        <div class="step-desc">Нажми кнопку ниже и установи приложение как обычно.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Скопируй ссылку конфигурации</div>
+        <div class="step-desc">Нажми на кнопку «Копировать» справа — ссылка сохранится в буфер обмена.</div>
+        <div class="code-block">
+          <input class="code-block-url" id="karing-url" type="text" readonly value="https://raw.githubusercontent.com/0x64656164/cancer-treatment/refs/heads/main/karing/Karing_config_by_voided.zip" onclick="this.select()">
+          <button class="copy-btn" onclick="copyCode(this, document.getElementById('karing-url').value)">Копировать</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Открой Karing и перейди в настройки</div>
+        <div class="step-desc">Запусти приложение → нажми <strong>⚙️</strong> (шестерёнка) в правом верхнем углу.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Импортируй конфигурацию по URL</div>
+        <div class="step-desc">
+          В настройках нажми <strong>Резервное копирование и восстановление</strong> →
+          <strong>Импорт и экспорт в файл</strong> →
+          <strong>Импорт из URL</strong>.<br><br>
+          Вставь скопированную ссылку, нажми <strong>Ок</strong> и согласись на импорт.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">Включи VPN</div>
+        <div class="step-desc">На главном экране нажми большую кнопку подключения. Готово!</div>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="downloadApp('karing')" class="btn-install">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M10 3v11M5 9l5 5 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3 17h14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span id="karing-dl-label">Скачать Karing</span>
+  </button>
+
+  <div class="note-box" id="karing-note">
+    <strong>❗️  Важное про белые списки</strong>
+    Когда интернет в городе глушат просто переключи ползунок с "Правила" на "Глбально" и всё заработает.
+    Когда интернет снова будет доступен просто верни обратно.
+
+    <strong>💡 Немного о Karing</strong>
+    Karing пропускает через VPN только заблокированные сайты — YouTube, Instagram, Discord и т.д. Обычные сайты и игры идут напрямую, поэтому скорость не теряется. Рекламу блокирует автоматически. Если что-то не открывается — убедись, что конфигурация импортирована и VPN включён.
+  </div>
+</section>
+
+<!-- ─────────── HIDDIFY INSTRUCTION ─────────── -->
+<section id="inst-hiddify" class="instruction">
+  <div class="inst-header" id="hiddify-header">
+    <div class="divider"></div>
+    <div class="inst-title">Настройка Hiddify</div>
+    <div class="inst-subtitle">Буквально один клик. Серьёзно.</div>
+  </div>
+
+  <div class="steps" id="hiddify-steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Скачай Hiddify</div>
+        <div class="step-desc">Нажми кнопку ниже и установи приложение.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Импортируй конфигурацию</div>
+        <div class="step-desc">Нажми кнопку «Импортировать конфигурацию» — она откроет Hiddify и автоматически добавит всё необходимое.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Нажми «Подключиться»</div>
+        <div class="step-desc">В приложении нажми большую кнопку подключения. Готово, VPN работает!</div>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="downloadApp('hiddify')" class="btn-install" style="margin-bottom:14px">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M10 3v11M5 9l5 5 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3 17h14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span id="hiddify-dl-label">Скачать Hiddify</span>
+  </button>
+
+  <a href="hiddify://import/https://raw.githubusercontent.com/0x64656164/cancer-treatment/refs/heads/main/hiddify_config.json?mux=h2mux&mux_max=18&mux_min=2&mux_pad=false&mux_up=100&mux_down=100" class="btn-install" style="background: linear-gradient(135deg, #1a7a4a, #0f5a34); box-shadow: 0 6px 28px rgba(26,122,74,0.35);">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M10 2a8 8 0 100 16A8 8 0 0010 2z" stroke="white" stroke-width="1.5"/>
+      <path d="M7 10l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Импортировать конфигурацию
+  </a>
+
+  <div class="note-box" id="hiddify-note">
+    <strong>💡 Подсказки</strong>
+    Hiddify направляет весь трафик через VPN — это делает его очень стабильным. Рекламу блокирует автоматически. Для онлайн-игр или если нужна максимальная скорость — просто выключи VPN на время игры и снова включи. Если конфигурация не импортировалась автоматически — убедись, что Hiddify уже установлен, и нажми кнопку снова.
+  </div>
+</section>
+
+<script>
+  // ── OS detection ──
+  function detectOS() {
+    const ua = navigator.userAgent;
+    if (/iPhone|iPad|iPod/i.test(ua)) return 'ios';
+    if (/Android/i.test(ua)) return 'android';
+    if (/Win/i.test(ua)) return 'windows';
+    if (/Linux/i.test(ua)) return 'linux';
+    return 'unknown';
+  }
+
+  const karingLinks = {
+    ios:     'https://apps.apple.com/us/app/karing/id6472431552',
+    android: 'https://dot.karing.app/client.html?tag=android-stable',
+    windows: 'https://dot.karing.app/client.html?tag=windows-installer-stable',
+    linux:   'https://dot.karing.app/client.html?tag=linux-deb-stable',
+    unknown: 'https://karing.app/download/'
+  };
+
+  const hiddifyLinks = {
+    ios:     'https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532',
+    android: 'https://play.google.com/store/apps/details?id=app.hiddify.com',
+    windows: 'https://github.com/hiddify/hiddify-app/releases/latest/download/Hiddify-Windows-Setup-x64.exe',
+    linux:   'https://github.com/hiddify/hiddify-app/releases',
+    unknown: 'https://github.com/hiddify/hiddify-app/releases'
+  };
+
+  const osLabels = {
+    ios:     '— App Store',
+    android: '— Android',
+    windows: '— Windows',
+    linux:   '— Linux',
+    unknown: ''
+  };
+
+  function downloadApp(app) {
+    const os = detectOS();
+    const url = app === 'karing' ? karingLinks[os] : hiddifyLinks[os];
+    window.open(url, '_blank');
+  }
+
+  // Update button labels to show detected OS
+  (function() {
+    const os = detectOS();
+    const suffix = osLabels[os];
+    if (suffix) {
+      const kLabel = document.getElementById('karing-dl-label');
+      const hLabel = document.getElementById('hiddify-dl-label');
+      if (kLabel) kLabel.textContent = 'Скачать Karing ' + suffix;
+      if (hLabel) hLabel.textContent = 'Скачать Hiddify ' + suffix;
+    }
+  })();
+  function smoothTo(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── Lottie ──
+  const anim = lottie.loadAnimation({
+    container: document.getElementById('lottie-anim'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: false,
+    path: 'https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json' // shield / VPN anim
+  });
+
+  // ── Intersection Observer ──
+  const observed = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        if (e.target.id === 'lottie-wrap') anim.play();
+      }
+    });
+  }, { threshold: 0.15 });
+
+  ['lottie-wrap','choice-label','choice-sub','cards'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observed.observe(el);
+  });
+
+  // ── choose ──
+  function choose(type) {
+    // hide both
+    document.getElementById('inst-karing').classList.remove('active');
+    document.getElementById('inst-hiddify').classList.remove('active');
+
+    const target = document.getElementById('inst-' + type);
+    target.classList.add('active');
+
+    // scroll
+    setTimeout(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+
+    // animate steps
+    setTimeout(() => {
+      const header = target.querySelector('.inst-header');
+      if (header) { observed.observe(header); header.classList.add('visible'); }
+
+      target.querySelectorAll('.step').forEach((s, i) => {
+        setTimeout(() => { s.classList.add('visible'); }, i * 120);
+      });
+
+      const note = target.querySelector('.note-box');
+      if (note) setTimeout(() => note.classList.add('visible'), 600);
+    }, 350);
+  }
+
+  // ── copy ──
+  function copyCode(btn, code) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(code).then(() => {
+        showCopied(btn);
+      }).catch(err => {
+        console.warn('Clipboard API не сработал, пробуем fallback:', err);
+        fallbackCopyText(btn, code);
+      });
+    } else {
+      fallbackCopyText(btn, code);
+    }
+  }
+
+  function fallbackCopyText(btn, code) {
+    const textarea = document.createElement('textarea');
+    textarea.value = code;
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-9999px';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) { showCopied(btn); }
+      else { throw new Error('execCommand вернул false'); }
+    } catch (err) {
+      console.error('Ошибка копирования:', err);
+      btn.textContent = 'Ошибка!';
+      setTimeout(() => { btn.textContent = 'Копировать'; }, 1500);
+    }
+    document.body.removeChild(textarea);
+  }
+
+  function showCopied(btn) {
+    btn.textContent = '✓ Скопировано';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Копировать'; btn.classList.remove('copied'); }, 2000);
+  }
+</script>
+</body>
+</html>
