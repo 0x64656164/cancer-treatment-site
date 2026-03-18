@@ -474,7 +474,8 @@
 
   .note-box.visible { opacity: 1; transform: translateY(0); }
 
-  .note-box strong { font-weight: 700; display: block; margin-bottom: 4px; color: #5a4000; }
+  .note-box strong { font-weight: 700; display: block; margin-bottom: 4px; margin-top: 10px; color: #5a4000; }
+  .note-box strong:first-child { margin-top: 0; }
 
   /* ── DIVIDER ── */
   .divider {
@@ -634,10 +635,10 @@
     <span id="karing-dl-label">Скачать Karing</span>
   </button>
 
+  <!-- ИСПРАВЛЕНО: уникальный id для подсказки Karing -->
   <div class="note-box" id="karing-note">
-    <strong>❗️  Важное про белые списки</strong>
-    Когда интернет в городе глушат просто переключи ползунок с "Правила" на "Глбально" и всё заработает.
-    Когда интернет снова будет доступен просто верни обратно.
+    <strong>❗️ Важное про белые списки</strong>
+    Когда интернет в городе глушат — просто переключи ползунок с «Правила» на «Глобально» и всё заработает. Когда интернет снова будет доступен — верни обратно.
 
     <strong>💡 Немного о Karing</strong>
     Karing пропускает через VPN только заблокированные сайты — YouTube, Instagram, Discord и т.д. Обычные сайты и игры идут напрямую, поэтому скорость не теряется. Рекламу блокирует автоматически. Если что-то не открывается — убедись, что конфигурация импортирована и VPN включён.
@@ -678,7 +679,7 @@
     </div>
   </div>
 
-  <button onclick="downloadApp('hiddify')" class="btn-install" style="margin-bottom:14px">
+  <button onclick="downloadApp('hiddify')" class="btn-install" style="margin-bottom:0">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <path d="M10 3v11M5 9l5 5 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M3 17h14" stroke="white" stroke-width="2" stroke-linecap="round"/>
@@ -686,21 +687,19 @@
     <span id="hiddify-dl-label">Скачать Hiddify</span>
   </button>
 
-  <a href="hiddify://import/https://raw.githubusercontent.com/0x64656164/cancer-treatment/refs/heads/main/hiddify_config.json" class="btn-install" style="background: linear-gradient(135deg, #1a7a4a, #0f5a34); box-shadow: 0 6px 28px rgba(26,122,74,0.35);">
+  <!-- ИСПРАВЛЕНО: кнопка импорта теперь <button> как и все остальные -->
+  <button onclick="window.location.href='hiddify://import/https://raw.githubusercontent.com/0x64656164/cancer-treatment/refs/heads/main/hiddify_config.json'" class="btn-install" style="background: linear-gradient(135deg, #1a7a4a, #0f5a34); box-shadow: 0 6px 28px rgba(26,122,74,0.35);">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <path d="M10 2a8 8 0 100 16A8 8 0 0010 2z" stroke="white" stroke-width="1.5"/>
       <path d="M7 10l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     Импортировать конфигурацию
-  </a>
+  </button>
 
-  <div class="note-box" id="karing-note">
-    <strong>❗️  Важное про белые списки</strong>
-    Когда интернет в городе глушат просто переключи ползунок с "Правила" на "Глбально" и всё заработает.
-    Когда интернет снова будет доступен просто верни обратно.
-
-    <strong>💡 Немного о Karing</strong>
-    Karing пропускает через VPN только заблокированные сайты — YouTube, Instagram, Discord и т.д. Обычные сайты и игры идут напрямую, поэтому скорость не теряется. Рекламу блокирует автоматически. Если что-то не открывается — убедись, что конфигурация импортирована и VPN включён.
+  <!-- ИСПРАВЛЕНО: уникальный id для подсказки Hiddify -->
+  <div class="note-box" id="hiddify-note">
+    <strong>💡 Немного о Hiddify</strong>
+    Hiddify направляет весь трафик через VPN — это делает его очень стабильным. Рекламу блокирует автоматически. Для онлайн-игр или если нужна максимальная скорость — просто выключи VPN на время игры и снова включи. Если конфигурация не импортировалась автоматически — убедись, что Hiddify уже установлен, и нажми кнопку снова.
   </div>
 </section>
 
@@ -756,6 +755,8 @@
       if (hLabel) hLabel.textContent = 'Скачать Hiddify ' + suffix;
     }
   })();
+
+  // ── smooth scroll helper ──
   function smoothTo(id) {
     document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -786,19 +787,16 @@
 
   // ── choose ──
   function choose(type) {
-    // hide both
     document.getElementById('inst-karing').classList.remove('active');
     document.getElementById('inst-hiddify').classList.remove('active');
 
     const target = document.getElementById('inst-' + type);
     target.classList.add('active');
 
-    // scroll
     setTimeout(() => {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 80);
 
-    // animate steps
     setTimeout(() => {
       const header = target.querySelector('.inst-header');
       if (header) { observed.observe(header); header.classList.add('visible'); }
